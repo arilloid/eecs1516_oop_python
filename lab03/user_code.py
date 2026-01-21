@@ -73,8 +73,11 @@ class Location:
          >>> l2 = Location(43.4723, -79.7087)
          >>> l1 == l2
          True
+         >>> l3 = Location(43, -79.7087)
+         >>> l1 == l3
+         False
          """
-        pass  # your code goes here
+        return (self._lat == other.get_lat() and self._lon == other.get_lon())
 
 
 class MunicipalTree(object):
@@ -116,9 +119,17 @@ class MunicipalTree(object):
           <class '__main__.Location'>
           >>> print(t.get_loc())
           (43.4723, -79.7087)
+          >>> type(t.get_diameter())
+          <class 'int'>
+          >>> print(t.get_diameter())
+          22
           """
         self._wood_params = [0.15, 2.15]  # default allometreic parameters
-        pass  # your code goes here
+        self._type = type
+        self._diameter = int(diameter)
+        self._owner = owner
+        self._name = name
+        self._loc = Location(float(longitude), float(latitude))
 
     def calculate_carbon_content(self) -> float:
         """ Calculate the carbon content of this tree in kg, based on biomass of wood.
@@ -147,8 +158,16 @@ class MunicipalTree(object):
             'Ash'
             >>> abs(round(t.calculate_carbon_content(),2)-54.71) < 1
             True
+            >>> print(t.calculate_carbon_content())
+            54.71146758653036
             """
-        pass # your code goes here
+        a = 0.474
+        p, q = self._wood_params[0], self._wood_params[1]
+
+        biomass = p*(self._diameter**q)
+        carbon = a*biomass
+
+        return carbon
 
     def set_wood_params(self, params: list[float]) -> None:
         """ setWoodParams of tree """
@@ -218,8 +237,11 @@ class Beech(MunicipalTree):
         True
         >>> isinstance(s, WhiteAsh)
         False
+        >>> type(s) == type(t)
+        False
         """
-        pass  # your code goes here
+        MunicipalTree.__init__(self, type, diameter, owner, name, longitude, latitude)
+        self._wood_params = [0.15, 2.25]
 
 
 class WhiteAsh(MunicipalTree):
@@ -244,8 +266,11 @@ class WhiteAsh(MunicipalTree):
         True
         >>> isinstance(s, Beech)
         False
+        >>> type(s) == type(t)
+        False
         """
-        pass  # your code goes here
+        MunicipalTree.__init__(self, type, diameter, owner, name, longitude, latitude)
+        self._wood_params = [0.19, 2.17]
 
 
 if __name__ == '__main__':
