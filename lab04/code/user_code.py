@@ -128,9 +128,21 @@ class WatermainBreak:
         Traceback (most recent call last):
         ...
         BreakException: No data before 1990 or after 2016
+        >>> other_wm = WatermainBreak(date(1972,2,7),"1990",-79.4423175852,43.7400136761)
+        Traceback (most recent call last):
+        ...
+        BreakException: year must be an integer
         """
-        pass  # TODO: Implement this function
+        if not (isinstance(when, date)): raise BreakException("when must be of type date")
+        if not (isinstance(lon, float) and isinstance(lat, float)): raise BreakException("lon and lat must be of type float")
+        if not isinstance(year, int): raise BreakException("year must be an integer")
+        if not (1990 <= year <= 2016 ): raise BreakException("No data before 1990 or after 2016")
 
+        self._date = when
+        self._year = year
+        self._lon = lon
+        self._lat = lat
+        
     def get_year(self):
         return self._year
 
@@ -168,17 +180,24 @@ class BreakFilter:
         >>> filtered = BreakFilter([1991], breaks)
         >>> len(filtered.get_breaks())
         1
+        >>> filtered.get_breaks()
+        [WatermainBreak('1991-02-07', 1991, -79.4423175852, 43.7400136761)]
         >>> filtered = BreakFilter([], breaks)
         >>> len(filtered.get_breaks())
         3
         """
-        pass  # TODO: Implement this function
+        self._filter_years = filter_years
+        if len(filter_years) == 0:
+            self._breaks = breaks
+        else:
+            self._breaks = list(filter(lambda y: y.get_year() in filter_years, breaks))
 
     def get_breaks(self):
         if hasattr(self, '_breaks'):
             return self._breaks
 
     def get_filter_years(self):
+
         if hasattr(self, '_filter_years'):
             return self._filter_years
 
@@ -196,8 +215,19 @@ def read_breaks_file(filename: str) -> list[WatermainBreak]:
     2933
     >>> isinstance(breaks[0], WatermainBreak)
     True
+    >>> all(isinstance(b, WatermainBreak) for b in breaks)
+    True
     """
-    pass  # TODO: Implement this function
+    with open(filename) as f:
+        breaks_info_strings = [line[:-1].split(',') for line in f][1:]
+    
+    watermain_breaks = []
+
+    for b in breaks_info_strings:
+        year, month, day = b[0].split("/")
+        watermain_breaks.append(WatermainBreak(date(int(year), int(month), int(day)), int(b[1]), float(b[2]), float(b[3])))
+
+    return watermain_breaks
 
 
 if __name__ == "__main__":
