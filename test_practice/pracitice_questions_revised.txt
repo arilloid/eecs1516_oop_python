@@ -1,0 +1,42 @@
+Q1. 
+
+We want to build an event management system that keeps track of tickets sold for events.  Some events are regular events while others are dinner theater events (which include a surcharge, as they feature both an event and a meal). Each ticket has a unique id, that is designated by an integer. 
+
+Your job is to implement a ticket management class that will:
+
+1. Initialize a set of tickets to be sold, each with a unique numeric ID, for either dinner theatre or regular events.  
+2. Determine if there are tickets available to be sold.
+3. Manage the sale of tickets, if there are tickets to be sold. 
+4. Return tickets to the pool of tickets available for selling. This will make the ticket available for someone else to purchase in the future.
+5. Override the get_price method of an EventTicket in the class DinnerTheatreTicket, to account for the cost of a meal.
+
+With all of this this in mind, we want to define a class called EventManagementSystem which has a constructor as well as three methods, defined as follows:
+
+tickets_exist() – this method returns True if there are tickets that can be sold. If not, the method returns False.
+
+sell_ticket() – if there are tickets that can be sold, this method returns an EventTicket. If no tickets are available, the method should return None, since there are no tickets to be sold.
+
+return_ticket(ticket: EventTicket) – this method is passed an EventTicket. The ticket will become available for sale (i.e., some future call to sell_ticket could return this EventTicket). 
+
+*** Note however that tickets are to be sold in a particular order, as follows: ***
+
+If any ticket has been **returned** (i.e. subject to a call to return_ticket()), sell that EventTicket in the order in which it was returned, before selling any other available tickets.
+
+If there are no previously tickets that have been returned to sell again, then sell seats in their numberic order. So, the first ticket sold would be 1, followed by 2, then 3, etc.  As an example, say we sell tickets 1, 2, 3, and 4. Then, ticket 2 is returned, and then ticket 1 is returned. The next ticket we will sell will be ticket number 2, followed by 1. After that (and assuming no other ticket has been returned), we would then sell ticket number 5.
+
+You will also need to override the get_price method of an EventTicket in the class DinnerTheatreTicket.
+
+The outline of the class EventManagementSystem has been given to you. Your task is to write the implementation (body) of each of the methods that remain incomplete. 
+
+Q2. Write two unique doctests for each of the following methods:
+
+1. The EventManagementSystem constructor (__init__)
+2. tickets_exist()
+3. sell_ticket()
+4. return_ticket(ticket: EventTicket) 
+
+Q3. Write an additional class method for EventManagementSystem that will take, as input, a list of EventTickets (be they regular or dinner theatre tickets) and return a corresponding list of ticket prices.  There should be one price in the output list for each ticket in the input list, and the order of the prices should correspond to the order of the tickets in the input list. Bonus if you can write this method in a single line.
+
+Q4.
+
+Create a UML diagram that details the design of the EventManagementSystem you have implemented. 
