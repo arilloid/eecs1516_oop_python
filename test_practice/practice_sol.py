@@ -46,11 +46,11 @@ class DinnerTheatreTicket(EventTicket):
 
     def get_price(self) -> float:
         """Return the price of this ticket.
-        Dinner theatre tickets include a meal, which increases the cost
+        Dinner theatre tickets include a meal, which increases the cos
         of each ticket.  Meals are $50.00 each.  Your code should therefore
         return the base price of the ticket, plus $50.00 for the meal.
         """
-        return self._price + 50
+        return super().get_price() + 50
 
 
 class EventManagementSystem:
@@ -62,31 +62,37 @@ class EventManagementSystem:
             that is equal to num_tickets; store these in available_tickets.
             If dinner_theatre is True, then the tickets should be DinnerTheatreTickets, otherwise they should be
             EventTickets. All tickets should be created with a base price of $100.00.
-
-            >>> ems = EventManagementSystem(5, True)
-            >>> isinstance(ems, EventManagementSystem)
-            True
-            >>> isinstance(ems._available_tickets[0], DinnerTheatreTicket)
-            True
+            >>> system = EventManagementSystem(3, False)
+            >>> system._available_tickets
+            [Ticket: 1, Ticket: 2, Ticket: 3]
+            >>> system = EventManagementSystem(1, True)
+            >>> system._available_tickets
+            [Ticket: 1 with vegetarian meal]
             """
+
         self._available_tickets = []
         self._returned_tickets = []
 
-        if dinner_theatre:
-            self._available_tickets.extend([DinnerTheatreTicket(num, price=100, meal="vegetarian") for num in range(1, num_tickets+1)])
-        else:
-            self._available_tickets.extend([EventTicket(num, price=100) for num in range(1, num_tickets+1)])
-        
+        # Note that these solutions assume that ticket numbers
+        # start at 1 and increase by 1 for each ticket!!
+        for t in range(1, num_tickets+1):
+            if dinner_theatre:
+                self._available_tickets.append(DinnerTheatreTicket(t, 100, "vegetarian"))
+            else:
+                self._available_tickets.append(EventTicket(t, 100))
+
     def tickets_exist(self) -> bool:
         """Indicates whether there are any available tickets.
-        
-        >>> ems1 = EventManagementSystem(0, False)
-        >>> ems1.tickets_exist()
-        False
-        >>> ems2 = EventManagementSystem(5, False)
-        >>> ems2.tickets_exist()
+        >>> system = EventManagementSystem(1, False)
+        >>> system.tickets_exist()
         True
+        >>> system.sell_ticket()
+        Ticket: 1
+        >>> system.tickets_exist()
+        False
         """
+        # Note the problem was a bit ambiguous about if we should just check _available_tickets or
+        # both _available_tickets and _returned_tickets!!
         return len(self._available_tickets) > 0 or len(self._returned_tickets) > 0
 
     def sell_ticket(self) -> EventTicket:
@@ -101,20 +107,33 @@ class EventManagementSystem:
         and then ticket 1 is returned. The next ticket we will sell will be 2, followed by 1.
         After that (assuming no other ticket has been returned), we would then sell ticket
         5 next.
-
-        >>> ems = EventManagementSystem(5, False)
-        >>> t1 = ems.sell_ticket()
-        >>> isinstance(t1, EventTicket)
-        True
-        >>> t2 = ems.sell_ticket()
-        >>> ems.return_ticket(t1)
-        >>> ems.sell_ticket()._ticket_num
-        1
+        >>> system = EventManagementSystem(500, False)
+        >>> t1 = system.sell_ticket() # sell ticket 1-4
+        >>> t2 = system.sell_ticket()
+        >>> t3 = system.sell_ticket()
+        >>> t4 = system.sell_ticket()
+        >>> system.return_ticket(t2) # return ticket 2
+        >>> system.return_ticket(t1) # return ticket 1
+        >>> t5 = system.sell_ticket() # sell ticket 2, then 1
+        >>> t5
+        Ticket: 2
+        >>> t6 = system.sell_ticket() # sell ticket 2, then 1
+        >>> t6
+        Ticket: 1
+        >>> t7 = system.sell_ticket() # sell ticket 5
+        >>> t7
+        Ticket: 5
         """
         if len(self._returned_tickets) > 0:
-            return self._returned_tickets.pop(0)
+            my_ticket = self._returned_tickets[0]
+            self._returned_tickets.remove(my_ticket)
+            # return self._returned_tickets.pop(0) # alternate solution
+            return my_ticket
         elif len(self._available_tickets) > 0:
-            return self._available_tickets.pop(0)
+            my_ticket = self._available_tickets[0]
+            self._available_tickets.remove(my_ticket)
+            # return self._available_tickets.pop(0) # alternate solution
+            return my_ticket
         else:
             return None
 
@@ -122,62 +141,41 @@ class EventManagementSystem:
         """Returns a ticket and stores this in the _returned_tickets
         list. Note that we will want the order in which tickets
         are returned to be the same as the order in which they were
-        sold.
-        
-        >>> ems = EventManagementSystem(5, False)
-        >>> t1 = ems.sell_ticket()
-        >>> t2 = ems.sell_ticket()
-        >>> t3 = ems.sell_ticket()
-        >>> ems.return_ticket(t3)
-        >>> ems.return_ticket(t2)
-        >>> ems._returned_tickets
-        [Ticket: 3, Ticket: 2]
-        >>> ems._returned_tickets[-1]._ticket_num
-        2
-        """
+        sold."""
         self._returned_tickets.append(ticket)
 
 
 def get_ticket_prices(tickets: list[EventTicket]) -> list[float]:
-    """
-    Takes a ticket list as input and returns the list of corresponding ticket prices.
-
-    >>> tickets = []
-    >>> tickets.append(EventTicket(1, 150))
-    >>> tickets.append(EventTicket(1, 200))
-    >>> EventManagementSystem.get_ticket_prices(tickets)
+    """ Answer to Q3!
+    >>> tickets = [DinnerTheatreTicket(1,100,"chicken"), EventTicket(2,200)]
+    >>> get_ticket_prices(tickets)
     [150, 200]
-    >>> dinner_tickets = []
-    >>> EventManagementSystem.get_ticket_prices(dinner_tickets)
-    []
     """
-    return [t.get_price() for t in tickets]
+    return [x.get_price() for x in tickets]
 
 
 if __name__ == "__main__":
-
-    # These lines won't do anything until you have doctests!
     import doctest
     doctest.testmod()
-    
-    # ticket_system = EventManagementSystem(500, True)  # make 500 dinner theatre tickets
-    # print("Tickets for sale: " + str(ticket_system.tickets_exist()))  # should print True
-    
-    # print("\n******\n")
-    
-    # sold = []
-    # for i in range(0, 3):
-    #     sold.append(ticket_system.sell_ticket())
-    #     print("Selling: " + str(sold[-1]))
-    #     print("Price is: " + str(sold[-1].get_price()) + " dollars.") #should be 150
-    
-    # print("\n******\n")
-    
-    # sold = sold[::-1]  # reverse the order of the list, for testing
-    # for ticket in sold:
-    #     print("Returning:" + str(ticket))
-    #     ticket_system.return_ticket(ticket)
-    
-    # print("\n******\n")
-    
-    # print("Selling: " + str(ticket_system.sell_ticket()))  # Should be Ticket number 2
+
+    ticket_system = EventManagementSystem(500, True)  # make 500 dinner theatre tickets
+    print("Tickets for sale: " + str(ticket_system.tickets_exist()))  # should print True
+
+    print("\n******\n")
+
+    sold = []
+    for i in range(0, 3):
+        sold.append(ticket_system.sell_ticket())
+        print("Selling: " + str(sold[-1]))
+        print("Price is: " + str(sold[-1].get_price()) + " dollars.")
+
+    print("\n******\n")
+
+    sold = sold[::-1]  # reverse the order of the list
+    for ticket in sold:
+        print("Returning:" + str(ticket))
+        ticket_system.return_ticket(ticket)
+
+    print("\n******\n")
+
+    print("Selling: " + str(ticket_system.sell_ticket()))  # Should be Ticket number 2

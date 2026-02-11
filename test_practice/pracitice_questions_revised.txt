@@ -37,6 +37,4 @@ Q2. Write two unique doctests for each of the following methods:
 
 Q3. Write an additional class method for EventManagementSystem that will take, as input, a list of EventTickets (be they regular or dinner theatre tickets) and return a corresponding list of ticket prices.  There should be one price in the output list for each ticket in the input list, and the order of the prices should correspond to the order of the tickets in the input list. Bonus if you can write this method in a single line.
 
-Q4.
-
-Create a UML diagram that details the design of the EventManagementSystem you have implemented. 
+Q4. Create a UML diagram that details the design of the EventManagementSystem you have implemented. 
