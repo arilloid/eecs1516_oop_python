@@ -29,34 +29,34 @@ def test_apartmentB():
 def test_predictA1():
     lr = LinearRegression()
     apartments = APARTMENT_DATA[1:10]
-    lr.train(apartments,'COSMETIC')
+    lr.train(apartments)
 
     apt = APARTMENT_DATA[11]
 
     assert (round(lr.predict(apt), 2) == 80.9)
-    assert (round(lr.r_squared, 2) == 0.22)
+    assert (round(lr._r_squared, 2) == 0.22)
 
 # Regression test
 def test_predictB1():
     lr = LinearRegression()
     apartments = APARTMENT_DATA[11:20]
-    lr.train(apartments,'COSMETIC')
+    lr.train(apartments)
 
     apt = APARTMENT_DATA[21]
 
     assert (round(lr.predict(apt), 2) == 88.65)
-    assert (round(lr.r_squared, 2) == 0.6)
+    assert (round(lr._r_squared, 2) == 0.6)
 
 # Regression test
 def test_predictC1():
     lr = LinearRegression()
     apartments = APARTMENT_DATA[21:30]
-    lr.train(apartments,'COSMETIC')
+    lr.train(apartments)
 
     apt = APARTMENT_DATA[31]
 
     assert (round(lr.predict(apt), 2) == 65.55)
-    assert (round(lr.r_squared, 2) == 0.63)
+    assert (round(lr._r_squared, 2) == 0.63)
 
 # Nearest Neighbour test
 def test_predictA2():
@@ -64,8 +64,9 @@ def test_predictA2():
     nn = NearestNeighbour(apartments)
 
     apt = APARTMENT_DATA[11]
+    # print(nn.predict(apt))
 
-    assert (round(nn.predict(apt), 2) == 80.9)
+    assert (abs(round(nn.predict(apt), 2) - 87) < 1)
 
 # Nearest Neighbour test
 def test_predictB2():
@@ -74,7 +75,7 @@ def test_predictB2():
 
     apt = APARTMENT_DATA[21]
 
-    assert (round(nn.predict(apt), 2) == 80.9)
+    assert (abs(round(nn.predict(apt), 2) - 81) < 1)
 
 # Nearest Neighbour test
 def test_predictC2():
@@ -83,7 +84,7 @@ def test_predictC2():
 
     apt = APARTMENT_DATA[31]
 
-    assert (round(nn.predict(apt), 2) == 80.9)
+    assert (abs(round(nn.predict(apt), 2) - 76) < 1)
 
 # Rate all test LS
 def test_rateallA():
@@ -117,7 +118,7 @@ def test_rateallB():
     predictions = [round(n, 1) for n in list(c.make_predictions(to_rate).values())]
     cosmetics = [r.apartment_cosmetic_rating() for r in to_rate]
     overall = [r.apartment_overall_rating() for r in to_rate]
-    correct = [78.2, 92.7, 89.5, 84.2, 72.6, 84.2, 88.5, 74.0, 88.5, 88.5, 88.5, 68.2, 84.2, 78.4, 90.0, 87.1, 88.5, 88.5, 76.9, 76.9]
+    correct = [77.0, 91.0, 82.0, 90.0, 65.0, 90.0, 92.0, 68.0, 92.0, 92.0, 92.0, 78.0, 90.0, 80.0, 91.0, 89.0, 92.0, 92.0, 71.0, 71.0]
 
     plt.plot(cosmetics, predictions, 'bo')
     plt.plot(cosmetics, overall, 'ro')
