@@ -34,7 +34,17 @@ class NearestNeighbour:
         >>> round(r.predict(apartment), 1)
         91
         """
-        pass  # replace with your code
+        predict_overall = 0
+        cosmetic_rating = apartment.apartment_cosmetic_rating()
+        min_diff = max([abs(cosmetic_rating - a.apartment_cosmetic_rating()) for a in self._training_data])
+        
+        for a in self._training_data:
+            diff = abs(cosmetic_rating - a.apartment_cosmetic_rating())
+            if diff < min_diff:
+                min_diff = diff
+                predict_overall = a.apartment_overall_rating()
+        
+        return predict_overall
 
     def make_predictions(self, apartments: list[ApartmentBuilding]) -> dict[ApartmentBuilding, float]:
         """Return the predicted rating for each apartment in `apartments`.
@@ -49,7 +59,12 @@ class NearestNeighbour:
         >>> list(r.make_predictions(apartments).values())
         [56, 56, 56, 91, 86, 86, 86, 56, 86, 56]
         """
-        pass  # replace with your code
+        predicted_ratings = {}
+
+        for a in apartments:
+            predicted_ratings[a] = self.predict(a)
+        
+        return predicted_ratings
 
 
 ##################################
@@ -87,7 +102,17 @@ class LinearRegression:
         >>> round(r._b,1)
         4.6
         """
-        pass #replace with your code
+        mean_x = sum([a.apartment_cosmetic_rating() for a in apartments])/len(apartments)
+        mean_y = sum([a.apartment_overall_rating() for a in apartments])/len(apartments)
+
+        s_xx = sum([(a.apartment_cosmetic_rating() - mean_x)**2 for a in apartments])
+        s_yy = sum([(a.apartment_overall_rating() - mean_y)**2 for a in apartments])
+        s_xy = sum([(a.apartment_cosmetic_rating() - mean_x) * (a.apartment_overall_rating() - mean_y) for a in apartments])
+
+        self._b = s_xy/s_xx
+        self._a = mean_y - (self._b * mean_x)
+
+        self._r_squared = s_xy**2/(s_xx * s_yy)
 
     def predict(self, apartment: ApartmentBuilding) -> float:
         """Use the parameters of the regression model to predict an overall rating for
@@ -108,7 +133,7 @@ class LinearRegression:
         >>> round(r.predict(apartment), 1)
         23
         """
-        pass #replace with your code
+        return self._a + (self._b * apartment.apartment_cosmetic_rating())
 
     def make_predictions(self, apartments: list[ApartmentBuilding]) -> dict[ApartmentBuilding, float]:
         """Return the predicted rating of `apartments`.  Note
@@ -128,7 +153,12 @@ class LinearRegression:
         >>> list(r.make_predictions(apartments).values())
         [5.2, 6.6, 5.6, 4.34, 3.44, 3.44, 3.0, 6.34, 3.44, 6.4]
         """
-        pass #replace with your code
+        predicted_ratings = {}
+
+        for a in apartments:
+            predicted_ratings[a] = self.predict(a)
+
+        return predicted_ratings
 
 
 def calculate_mse(predictions: dict[ApartmentBuilding, float]) -> float:
@@ -150,7 +180,10 @@ def calculate_mse(predictions: dict[ApartmentBuilding, float]) -> float:
       >>> round(calculate_mse(predictions),1)
       5310.2
       """
-    pass  # replace with your code
+    sse = sum([(a.apartment_overall_rating() - p)**2 for a, p in predictions.items()])
+    mse = sse/len(predictions)
+
+    return mse
 
 
 if __name__ == "__main__":
