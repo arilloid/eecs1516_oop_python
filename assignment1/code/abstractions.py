@@ -55,8 +55,22 @@ class ApartmentBuilding:
         """Return an apartment abstraction.
         >>> ApartmentBuilding('SOCIAL HOUSING', 1, 1973, [Review('MODERATE RISK', 6), Review('COSMETIC', 11), Review('OVERALL', 86)]).type
         'SOCIAL HOUSING'
+        >>> ApartmentBuilding('SOCIAL HOUSING', 1, 1973, []).reviews
+        []
+        >>> ApartmentBuilding('SOCIAL HOUSING', 1, 1973, [88, 99, 10]).reviews
+        Traceback (most recent call last):
+        ...
+        AssertionError: reviews must be a list of Reviews
         """
-        pass # REPLACE THIS WITH YOUR CODE
+        assert isinstance(type, str) and (type in (["TCHC", "PRIVATE", "SOCIAL HOUSING"])), "type must be a string, either 'TCHC', 'PRIVATE', or 'SOCIAL HOUSING'"
+        assert isinstance(ward, int), "ward must be an integer"
+        assert isinstance(year, int), "year must be an integer"
+        assert isinstance(reviews, list) and (all(isinstance(r, Review) for r in reviews) or len(reviews)==0), "reviews must be a list of Reviews"
+
+        self._type = type
+        self._ward = ward
+        self._year = year
+        self._reviews = reviews
 
     @property
     def type(self) -> str:
@@ -86,31 +100,64 @@ class ApartmentBuilding:
         """Return the number of ratings for the `apartment`.
         >>> ApartmentBuilding('SOCIAL HOUSING', 1, 1973, [Review('APT_LOG', 6), Review('APT_SAFETY', 11), Review('APT_OVERALL', 86)]).num_ratings()
         3
+        >>> ApartmentBuilding('PRIVATE', 1, 2000, []).num_ratings()
+        0
         """
-        pass # REPLACE THIS WITH YOUR CODE
+        return len(self.reviews)
 
     def apartment_min_rating(self) -> tuple[str, float]:
         """Return the minimum rating for the apartment building.
         >>> ApartmentBuilding('SOCIAL HOUSING', 1, 1973, [Review('MODERATE RISK', 6), Review('COSMETIC', 11), Review('OVERALL', 86)]).apartment_min_rating()
         ('MODERATE RISK', 6)
+        >>> ApartmentBuilding('PRIVATE', 1, 2000, []).apartment_min_rating()
         """
-        pass # REPLACE THIS WITH YOUR CODE
+        if len(self.reviews) == 0: 
+            return None
+        
+        # placeholder
+        min_rating = (None, max([r.rating for r in self.reviews]))
+
+        # find the review with the min rating
+        for r in self.reviews: 
+            if r._rating < min_rating[1]:
+                min_rating = (r.type, r.rating)
+
+        return min_rating
 
     def apartment_overall_rating(self) -> float:
         """Return the overall rating for the apartment building.
         If there are no reviews for the building, return zero.
         >>> ApartmentBuilding('SOCIAL HOUSING', 1, 1973, [Review('MODERATE RISK', 6), Review('COSMETIC', 11), Review('OVERALL', 86)]).apartment_overall_rating()
         86
+        >>> ApartmentBuilding('PRIVATE', 1, 2000, []).apartment_overall_rating()
+        0
+        >>> ApartmentBuilding('PRIVATE', 1, 2000, [Review('MODERATE RISK', 10), Review('COSMETIC', 10)]).apartment_overall_rating()
+        0
         """
-        pass # REPLACE THIS WITH YOUR CODE
+        if len(self.reviews) == 0 or ("OVERALL" not in [r.type for r in self.reviews]): 
+            return 0
+        
+        for r in self.reviews:
+            if r.type == "OVERALL":
+                return r.rating
 
     def apartment_cosmetic_rating(self) -> float:
         """Return the cosmetic rating for the apartment building.
         If there are no reviews for the building, return zero.
         >>> ApartmentBuilding('SOCIAL HOUSING', 1, 1973, [Review('MODERATE RISK', 6), Review('COSMETIC', 11), Review('OVERALL', 86)]).apartment_cosmetic_rating()
         11
+        >>> ApartmentBuilding('PRIVATE', 1, 2000, []).apartment_cosmetic_rating()
+        0
+        >>> ApartmentBuilding('PRIVATE', 1, 2000, [Review('MODERATE RISK', 10), Review('OVERALL', 10)]).apartment_cosmetic_rating()
+        0
         """
-        pass # REPLACE THIS WITH YOUR CODE
+        if len(self.reviews) == 0 or ("COSMETIC" not in [r.type for r in self.reviews]): 
+            return 0
+        
+        for r in self.reviews:
+            if r.type == 'COSMETIC':
+                return r.rating
+
 
 if __name__ == "__main__":
     import doctest
