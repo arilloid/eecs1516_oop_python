@@ -120,7 +120,15 @@ def remove_meetings(stack: MeetingStack, day: date) -> None:
     >>> s.is_empty()
     True
     """
-    pass  # TODO: replace this line with your code
+    temp = MeetingStack()
+    
+    while not stack.is_empty():
+        m = stack.pop()
+        if m.get_date() != day:
+            temp.push(m)
+    
+    while not temp.is_empty():
+        stack.push(temp.pop())
 
 
 def change_meeting_times(stack: MeetingStack) -> MeetingStack:
@@ -147,7 +155,20 @@ def change_meeting_times(stack: MeetingStack) -> MeetingStack:
     >>> [x.get_timing() for x in items]
     ['Afternoon', 'Morning', 'Morning']
     """
-    pass  # TODO: replace this line with your code
+    temp = MeetingStack()
+    new_stack = MeetingStack()
+    
+    while not stack.is_empty():
+        temp.push(stack.pop())
+    
+    while not temp.is_empty():
+        m = temp.pop()
+        stack.push(m)
+
+        new_time = 'Morning' if m.get_timing() == 'Afternoon' else 'Afternoon'
+        new_stack.push(Meeting(str(m.get_date()), str(m.get_number()), new_time))
+
+    return new_stack
 
 
 ###############################################################################
@@ -214,7 +235,20 @@ def count_meetings(queue: MeetingQueue, day: date) -> int:
     >>> q.is_empty()
     True
     """
-    pass  # TODO: replace this line with your code
+    count = 0
+    temp = MeetingQueue()
+
+    while not queue.is_empty():
+        meeting = queue.dequeue()
+        if meeting.get_date() == day:
+            count += 1
+        else:
+            temp.enqueue(meeting)
+    
+    while not temp.is_empty():
+        queue.enqueue(temp.dequeue())
+
+    return count
 
 
 def safe_count_meetings(queue: MeetingQueue, day: date) -> int:
@@ -232,7 +266,19 @@ def safe_count_meetings(queue: MeetingQueue, day: date) -> int:
     >>> q.is_empty()
     False
     """
-    pass  # TODO: replace this line with your code
+    count = 0
+    temp = MeetingQueue()
+
+    while not queue.is_empty():
+        meeting = queue.dequeue()
+        if meeting.get_date() == day:
+            count += 1
+        temp.enqueue(meeting)
+    
+    while not temp.is_empty():
+        queue.enqueue(temp.dequeue())
+
+    return count
 
 
 def read_meeting_data(filename: str) -> dict[str, list[Meeting]]:
