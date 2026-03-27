@@ -121,12 +121,12 @@ def remove_meetings(stack: MeetingStack, day: date) -> None:
     True
     """
     temp = MeetingStack()
-    
+
     while not stack.is_empty():
-        m = stack.pop()
-        if m.get_date() != day:
-            temp.push(m)
-    
+        meeting = stack.pop()
+        if meeting.get_date() != day:
+            temp.push(meeting)
+
     while not temp.is_empty():
         stack.push(temp.pop())
 
@@ -157,19 +157,19 @@ def change_meeting_times(stack: MeetingStack) -> MeetingStack:
     """
     temp = MeetingStack()
     new_stack = MeetingStack()
-    
+
     while not stack.is_empty():
         temp.push(stack.pop())
-    
-    while not temp.is_empty():
-        m = temp.pop()
-        stack.push(m)
 
-        new_time = 'Morning' if m.get_timing() == 'Afternoon' else 'Afternoon'
-        new_stack.push(Meeting(str(m.get_date()), str(m.get_number()), new_time))
+    while not temp.is_empty():
+        meeting = temp.pop()
+        stack.push(meeting)
+
+        timing = "Afternoon" if meeting.get_timing() == "Morning" else "Morning"
+        meeting.set_timing(timing)
+        new_stack.push(meeting) 
 
     return new_stack
-
 
 ###############################################################################
 class MeetingQueue:
@@ -235,16 +235,17 @@ def count_meetings(queue: MeetingQueue, day: date) -> int:
     >>> q.is_empty()
     True
     """
-    count = 0
     temp = MeetingQueue()
+    count = 0
 
     while not queue.is_empty():
-        meeting = queue.dequeue()
-        if meeting.get_date() == day:
+        m = queue.dequeue()
+
+        if m.get_date() == day:
             count += 1
         else:
-            temp.enqueue(meeting)
-    
+            temp.enqueue(m)
+
     while not temp.is_empty():
         queue.enqueue(temp.dequeue())
 
@@ -266,15 +267,16 @@ def safe_count_meetings(queue: MeetingQueue, day: date) -> int:
     >>> q.is_empty()
     False
     """
-    count = 0
     temp = MeetingQueue()
+    count = 0
 
     while not queue.is_empty():
-        meeting = queue.dequeue()
-        if meeting.get_date() == day:
+        m = queue.dequeue()
+
+        if m.get_date() == day:
             count += 1
-        temp.enqueue(meeting)
-    
+        temp.enqueue(m)
+
     while not temp.is_empty():
         queue.enqueue(temp.dequeue())
 

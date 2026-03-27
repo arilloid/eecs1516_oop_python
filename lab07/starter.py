@@ -152,18 +152,16 @@ class TreeNode:
         >>> t.subtrees[2].apartment.eval_score
         50
         """
-        # if tree is empty, place apartment at root
+        #1 tree is empty
         if self.is_empty():
             self._apartment = apartment
-
-        # root exists but has fewer than 3 subtrees
+        #2 less than 3 subtrees
         elif len(self._subtrees) < 3:
             self._subtrees.append(TreeNode(apartment, []))
-
-        # already has 3 subtrees, pick random index 0-2 and recurse
+        #3 pick a random subtree tree and recurse
         else:
             index = random.randint(0, 2)
-            self._subtrees[index].insert(apartment)
+            self.subtrees[index].insert(apartment)
 
     def depth(self) -> int:
         """Return the depth of this tree.
@@ -174,11 +172,10 @@ class TreeNode:
         """
         if self.is_empty():
             return 0
-        elif len(self._subtrees) == 0:
+        elif self.subtrees == []:
             return 1
         else:
-            max_child_depth = max(sub.depth() for sub in self._subtrees)
-            return 1 + max_child_depth
+            return 1 + max([sub.depth() for sub in self.subtrees])
 
     def average_evaluation_score(self) -> float:
         """Return a float that represents
@@ -203,20 +200,25 @@ class TreeNode:
         >>> round(t.average_evaluation_score(), 2)
         64.29
         """
-        def get_score_totals(node):
-            if node.is_empty():
-                return (0, 0)
-            total = node.apartment.eval_score
+        def get_totals(node: TreeNode) -> tuple[float, float]:
             count = 1
+            total = node.apartment.eval_score
+
             for sub in node.subtrees:
-                sub_total, sub_count = get_score_totals(sub)
-                total += sub_total
+                sub_total, sub_count = get_totals(sub)
                 count += sub_count
-            return (total, count)
+                total += sub_total
+            
+            return total, count
+        
+        if self.is_empty():
+            return 0.0
+        
+        total, count = get_totals(self)
+        return total/count
 
-        total, count = get_score_totals(self)
-        return 0.0 if count == 0 else total / count
-
+    
+        
 
 def read_apartment_data(filename: str) -> list[ApartmentBuilding]:
     """Accepts the name of a csv file.
@@ -237,3 +239,4 @@ def read_apartment_data(filename: str) -> list[ApartmentBuilding]:
 if __name__ == '__main__':
     import doctest
     doctest.testmod()
+  

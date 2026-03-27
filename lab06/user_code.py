@@ -167,9 +167,9 @@ class LinkedList:
         count = 0
 
         while curr_node:
-            count += 1
+            count +=1
             curr_node = curr_node.next
-
+        
         return count
 
     def occupancy_rate(self, sector: Optional[str] = None) -> float:
@@ -201,8 +201,8 @@ class LinkedList:
                 total_occupied += curr_node.shelter.occupied
                 total_unoccupied += curr_node.shelter.unoccupied
             curr_node = curr_node.next
-            
-        return round((total_occupied / (total_occupied + total_unoccupied)) * 100, 2)
+        
+        return round((total_occupied/(total_occupied+total_unoccupied)*100), 2)
 
     def sector_index(self, sector: str) -> int:
         """Return the index of the first occurrence of a shelter
@@ -229,8 +229,9 @@ class LinkedList:
         while curr_node:
             if curr_node.shelter.sector == sector:
                 return index
-            index += 1
+            
             curr_node = curr_node.next
+            index += 1
 
         raise ValueError
 
