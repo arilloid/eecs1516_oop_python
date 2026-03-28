@@ -166,8 +166,17 @@ class BSTTree:
             >>> bst._right._apartment
             PRIVATE: 82
             """
-        pass  # TO DO: implement this method
+        if self.is_empty():
+            self.apartment = apartment
+            self.left = BSTTree()
+            self.right = BSTTree()
+        else:
+            if apartment.eval_score < self.apartment.eval_score:
+                self.left.insert(apartment)
+            else:
+                self.right.insert(apartment)
 
+            
     def apartments_in_range(self, start: int, end: int) -> list[ApartmentBuilding]:
         """Return the apartments in this BST with evaluation scores between <start> and <end>, inclusive.
         The apartments should be returned in sorted order, based on their evaluation.
@@ -185,7 +194,20 @@ class BSTTree:
         >>> bst.apartments_in_range(0, 30)
         [PRIVATE: 19, TCHC: 22, PRIVATE: 25]
         """
-        pass  # TO DO: implement this method
+        if self.is_empty():
+            return []
+   
+        # collect from left
+        result = self._left.apartments_in_range(start, end)   
+        
+        # check current node
+        if start <= self._apartment.eval_score <= end:         
+            result.append(self._apartment)
+        
+        # collect from right
+        result += self._right.apartments_in_range(start, end) 
+        
+        return result
 
     def best_apartment(self) -> None:
         """Return (one of) the apartment(s) with the best evaluation
@@ -196,7 +218,10 @@ class BSTTree:
         >>> bst.best_apartment()
         PRIVATE: 80
         """
-        pass  # TO DO: implement this method
+        if self.right.is_empty():
+            return self.apartment
+        else:
+            return self.right.best_apartment()
 
     def worst_apartment(self) -> None:
         """Return (one of) the apartment(s) with the worst evaluation
@@ -207,7 +232,10 @@ class BSTTree:
         >>> bst.worst_apartment()
         PRIVATE: 17
         """
-        pass  # TO DO: implement this method
+        if self.left.is_empty():
+            return self.apartment
+        else:
+            return self.left.worst_apartment()
 
     def depth(self) -> int:
         """Return the depth of this tree. Calculate depth
@@ -224,7 +252,9 @@ class BSTTree:
         >>> bst.depth() < 300
         True
         """
-        pass  # TO DO: implement this method
+        if self.is_empty():
+            return 0
+        return 1 + max(self._left.depth(), self._right.depth())
 
 
 def read_apartment_data(filename: str) -> list[ApartmentBuilding]:
